@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moventra Registration Portal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="min-h-screen p-4">
+
+<!-- 🍔 BURGER BUTTON -->
+<button id="menuBtn" class="fixed top-4 left-4 z-[1001] bg-red-600 text-white p-2 rounded-lg shadow-lg hover:bg-red-700 transition">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- 🌑 OVERLAY -->
+<div id="overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition duration-300 z-[999]"></div>
+
+<!-- 📂 SIDE MENU -->
+<div id="sideMenu" class="fixed top-0 left-0 h-full w-64 shadow-2xl transform -translate-x-full transition duration-300 z-[1000] p-5 border-r">
+
+  <div class="flex items-center gap-2 mb-8">
+    <i data-lucide="car" class="text-red-500"></i>
+    <h2 class="text-xl font-bold text-white">Moventra</h2>
+  </div>
+
+  <nav class="space-y-2">
+
+    <a href="index.html"
+       class="flex items-center gap-3 p-3 rounded-lg bg-red-500/20 text-red-400 font-medium">
+      <i data-lucide="user"></i>
+      <span>Register Vehicle</span>
+    </a>
+
+    <a href="qr.html"
+       class="flex items-center gap-3 p-3 rounded-lg hover:bg-red-500/10 hover:text-red-400 transition">
+      <i data-lucide="qr-code"></i>
+      <span>QR Code Check</span>
+    </a>
+
+  </nav>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card shadow-2xl rounded-2xl p-7 max-w-xl w-full mx-auto relative">
+
+  <!-- HEADER -->
+  <div class="text-center mb-5">
+    <h1 class="text-2xl font-bold">Moventra System</h1>
+    <p class="text-sm opacity-70">Vehicle Registration Portal</p>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="w-full bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
+    <div id="progressBar" class="h-full bg-red-600 transition-all duration-500" style="width: 50%;"></div>
+  </div>
+
+  <!-- Indicators -->
+  <div class="flex justify-center mb-6 space-x-3">
+    <div id="stage1Indicator" class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center text-sm shadow">1</div>
+    <div id="stage2Indicator" class="w-7 h-7 rounded-full bg-gray-700 text-gray-300 flex items-center justify-center text-sm shadow">2</div>
+  </div>
+
+  <!-- ✅ FEEDBACK (FIX ADDED, NO UI CHANGE) -->
+  <div id="feedback"></div>
+
+  <form id="registrationForm" class="space-y-4">
+
+    <!-- STAGE 1 -->
+    <div id="stage1" class="space-y-3">
+      <h2 class="text-lg font-semibold flex items-center gap-2">
+        <i class="fas fa-user text-red-500"></i> Personal Information
+      </h2>
+
+      <div class="grid gap-3">
+
+        <!-- NAME -->
+        <div class="relative">
+          <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+          <input id="name" type="text" placeholder="Full Name"
+            class="w-full rounded-lg p-2 pl-9 pr-9 text-sm">
+          <i id="nameCheck" class="fas fa-check absolute right-3 top-3 text-green-500 opacity-0"></i>
+        </div>
+
+        <!-- ID -->
+        <div class="relative">
+          <i class="fas fa-id-card absolute left-3 top-3 text-gray-400"></i>
+          <input id="staffId" type="text" placeholder="Staff / Student ID"
+            class="w-full rounded-lg p-2 pl-9 pr-9 text-sm">
+          <i id="staffIdCheck" class="fas fa-check absolute right-3 top-3 text-green-500 opacity-0"></i>
+        </div>
+
+        <!-- ROLE DROPDOWN -->
+        <div class="dropdown" id="roleDropdown">
+          <div class="dropdown-selected">
+            <span>Select Role</span>
+            <i class="arrow"></i>
+          </div>
+
+          <div class="dropdown-panel">
+            <div class="dropdown-options">
+              <div data-value="student">Student</div>
+              <div data-value="staff">Staff</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="role">
+
+        <!-- PHONE -->
+        <div class="relative">
+          <i class="fas fa-phone absolute left-3 top-3 text-gray-400"></i>
+          <input id="phone" type="tel" placeholder="Phone Number"
+            class="w-full rounded-lg p-2 pl-9 pr-9 text-sm">
+          <i id="phoneCheck" class="fas fa-check absolute right-3 top-3 text-green-500 opacity-0"></i>
+        </div>
+
+        <input id="address" type="text" placeholder="Home Address"
+          class="w-full rounded-lg p-2 text-sm">
+
+        <input id="college" type="text" placeholder="College / Faculty"
+          class="w-full rounded-lg p-2 text-sm">
+
+        <!-- CAMPUS DROPDOWN -->
+        <div class="dropdown" id="campusDropdown">
+          <div class="dropdown-selected">
+            <span>Campus Status</span>
+            <i class="arrow"></i>
+          </div>
+
+          <div class="dropdown-panel">
+            <div class="dropdown-options">
+              <div data-value="on">On Campus</div>
+              <div data-value="off">Off Campus</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="campusStatus">
+
+        <input id="driverLicense" type="text" placeholder="Driver License Number"
+          class="w-full rounded-lg p-2 text-sm">
+
+      </div>
+
+      <button type="button" id="nextStage"
+        class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+        Continue to Vehicle
+      </button>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div id="stage2" class="hidden space-y-3">
+
+      <h2 class="text-lg font-semibold flex items-center gap-2">
+        <i class="fas fa-car text-red-500"></i> Vehicle Information
+      </h2>
+
+      <input id="plateNumber" type="text" placeholder="Plate Number"
+        class="w-full rounded-lg p-2 text-sm">
+
+      <input id="make" type="text" placeholder="Make / Model"
+        class="w-full rounded-lg p-2 text-sm">
+
+      <input id="color" type="text" placeholder="Vehicle Color"
+        class="w-full rounded-lg p-2 text-sm">
+
+      <div class="flex gap-2">
+        <button type="button" id="prevStage"
+          class="w-1/3 bg-gray-700 text-white py-2 rounded-lg">
+          Back
+        </button>
+
+        <button type="submit"
+          class="w-2/3 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+          Complete Registration
+        </button>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script type="module" src="app.js"></script>
+
+<script>
+lucide.createIcons();
+</script>
+
+<!-- LOADING -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[2000]">
+  <div class="loader-big"></div>
+</div>
+
+<!-- SUCCESS -->
+<div id="successScreen" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[2000]">
+  <div class="card p-8 text-center max-w-sm w-full">
+    <h2 class="text-xl font-bold mb-3">✅ Registration Complete</h2>
+    <p class="mb-4">Your vehicle has been successfully registered.</p>
+
+    <button id="closeSuccess" class="w-full py-2 rounded-lg">
+      Continue
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
