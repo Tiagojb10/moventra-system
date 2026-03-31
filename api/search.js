@@ -1,12 +1,17 @@
+export const runtime = 'nodejs';
+
 import { createClient } from '@supabase/supabase-js';
 
-export async function GET(request) {
+export default async function handler(req, res) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    if (req.method !== 'GET') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const { id } = req.query;
 
     if (!id) {
-      return Response.json({ error: 'Missing ID' }, { status: 400 });
+      return res.status(400).json({ error: 'Missing ID' });
     }
 
     const supabase = createClient(
@@ -18,18 +23,19 @@ export async function GET(request) {
       .from('users')
       .select('id, name, plate_number')
       .eq('staff_student_id', id.trim())
-      .single();
+      .limit(1);
 
-    if (error || !data) {
-      return Response.json({ error: 'User not found' }, { status: 404 });
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
 
-    return Response.json(data);
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json(data[0]);
 
   } catch (err) {
-    return Response.json(
-      { error: err.message },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: err.message });
   }
 }
