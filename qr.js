@@ -11,6 +11,9 @@ const resultName = document.getElementById('resultName');
 const resultPlate = document.getElementById('resultPlate');
 const resultQR = document.getElementById('resultQR');
 
+// 🔥 NEW: download button (we will create it dynamically)
+let downloadBtn;
+
 // ==========================
 // MENU
 // ==========================
@@ -25,41 +28,71 @@ overlay?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🔍 SEARCH USER (SECURE)
+// 🔥 FEEDBACK SYSTEM (same style as app.js)
+// ==========================
+function showFeedback(message) {
+  alert(message); // simple for now (can upgrade to UI later)
+}
+
+// ==========================
+// 🔍 SEARCH USER (IMPROVED)
 // ==========================
 async function searchUser() {
   const id = searchInput.value.trim();
 
-  if (!id) return;
+  if (!id) {
+    return showFeedback("Please enter an ID");
+  }
 
   try {
-    // 🔐 CALL BACKEND INSTEAD OF SUPABASE
     const res = await fetch(`/api/search?id=${id}`);
     const data = await res.json();
 
     if (!res.ok) {
-      alert("User not found");
-      return;
+      return showFeedback(data.error || "Search failed");
     }
 
+    // ==========================
     // SHOW RESULT
+    // ==========================
     resultBox.classList.remove('hidden');
-    resultName.textContent = data.name;
-    resultPlate.textContent = "Plate: " + data.plate_number;
 
+    resultName.textContent = data.data.name;
+    resultPlate.textContent = "Plate: " + data.data.plate_number;
+
+    // ==========================
     // GENERATE QR
-    QRCode.toCanvas(
+    // ==========================
+    await QRCode.toCanvas(
       resultQR,
       JSON.stringify({
         type: 'moventra_user',
-        id: data.id
+        id: data.data.id
       }),
       { width: 180 }
     );
 
+    // ==========================
+    // 🔥 ADD DOWNLOAD BUTTON
+    // ==========================
+    if (!downloadBtn) {
+      downloadBtn = document.createElement('button');
+      downloadBtn.textContent = "Download QR";
+      downloadBtn.className = "mt-3 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition w-full";
+
+      resultBox.appendChild(downloadBtn);
+    }
+
+    downloadBtn.onclick = () => {
+      const link = document.createElement('a');
+      link.download = `QR_${data.data.id}.png`;
+      link.href = resultQR.toDataURL();
+      link.click();
+    };
+
   } catch (err) {
     console.error(err);
-    alert("Something went wrong");
+    showFeedback("Server error. Please try again.");
   }
 }
 
@@ -68,7 +101,6 @@ async function searchUser() {
 // ==========================
 window.searchUser = searchUser;
 
-// ENTER KEY SUPPORT
 searchInput?.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') searchUser();
 });
