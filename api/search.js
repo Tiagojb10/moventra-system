@@ -1,63 +1,35 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from '@supabase/supabase-js';
 
-// ==========================
-// INIT SUPABASE (SECURE)
-// ==========================
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-// ==========================
-// HANDLER
-// ==========================
-export default async function handler(req, res) {
-  // ✅ ONLY ALLOW GET
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const { id } = req.query;
-
-  // ==========================
-  // 🔐 VALIDATION
-  // ==========================
-  if (!id || typeof id !== 'string') {
-    return res.status(400).json({ error: 'Missing or invalid ID' });
-  }
-
+export async function GET(request) {
   try {
-    // ==========================
-    // 🧼 CLEAN INPUT
-    // ==========================
-    const cleanId = id.trim();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-    // ==========================
-    // 🔍 QUERY DATABASE
-    // ==========================
+    if (!id) {
+      return Response.json({ error: 'Missing ID' }, { status: 400 });
+    }
+
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_KEY
+    );
+
     const { data, error } = await supabase
       .from('users')
       .select('id, name, plate_number')
-      .eq('staff_student_id', cleanId)
+      .eq('staff_student_id', id.trim())
       .single();
 
     if (error || !data) {
-      return res.status(404).json({
-        error: 'User not found'
-      });
+      return Response.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // ==========================
-    // ✅ RESPONSE
-    // ==========================
-    return res.status(200).json(data);
+    return Response.json(data);
 
   } catch (err) {
-    console.error('SEARCH ERROR:', err);
-
-   return res.status(500).json({
-  error: err.message,
-  details: err
-   });
+    return Response.json(
+      { error: err.message },
+      { status: 500 }
+    );
   }
 }
