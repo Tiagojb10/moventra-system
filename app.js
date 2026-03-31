@@ -9,17 +9,14 @@ const feedbackDiv = document.getElementById('feedback');
 const progressBar = document.getElementById('progressBar');
 const form = document.getElementById('registrationForm');
 
-// LOADING / SUCCESS
 const loadingOverlay = document.getElementById('loadingOverlay');
 const successScreen = document.getElementById('successScreen');
 const closeSuccess = document.getElementById('closeSuccess');
 
-// MENU
 const menuBtn = document.getElementById('menuBtn');
 const sideMenu = document.getElementById('sideMenu');
 const overlay = document.getElementById('overlay');
 
-// INPUTS
 const name = document.getElementById('name');
 const staffId = document.getElementById('staffId');
 const role = document.getElementById('role');
@@ -126,7 +123,7 @@ prevStageBtn?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🚀 SUBMIT (SECURE VERSION)
+// 🚀 SUBMIT (UPDATED ERROR HANDLING)
 // ==========================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -146,7 +143,6 @@ form?.addEventListener('submit', async (e) => {
   try {
     loadingOverlay?.classList.remove('hidden');
 
-    // 🔐 SEND TO BACKEND INSTEAD OF SUPABASE
     const response = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -167,7 +163,9 @@ form?.addEventListener('submit', async (e) => {
 
     const data = await response.json();
 
-    if (!response.ok) throw new Error(data.error);
+    if (!response.ok) {
+      throw new Error(data.error || "Something went wrong");
+    }
 
     loadingOverlay?.classList.add('hidden');
     successScreen?.classList.remove('hidden');
@@ -175,7 +173,9 @@ form?.addEventListener('submit', async (e) => {
   } catch (err) {
     console.error(err);
     loadingOverlay?.classList.add('hidden');
-    showFeedback('Error saving data!', 'error');
+
+    // ✅ SHOW REAL ERROR MESSAGE
+    showFeedback(err.message, 'error');
   }
 });
 
