@@ -1,8 +1,16 @@
+export const runtime = 'nodejs';
+
 import { createClient } from '@supabase/supabase-js';
 
-export async function POST(request) {
+export default async function handler(req, res) {
   try {
-    const body = await request.json();
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const body = typeof req.body === "string"
+      ? JSON.parse(req.body)
+      : req.body;
 
     if (
       !body.name ||
@@ -10,10 +18,9 @@ export async function POST(request) {
       !body.role ||
       !body.plate_number
     ) {
-      return Response.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return res.status(400).json({
+        error: 'Missing required fields'
+      });
     }
 
     const supabase = createClient(
@@ -21,34 +28,31 @@ export async function POST(request) {
       process.env.SUPABASE_SERVICE_KEY
     );
 
-    const newUser = {
-      name: body.name.trim(),
-      staff_student_id: body.staff_student_id.trim(),
-      role: body.role,
-      phone: body.phone || null,
-      address: body.address || null,
-      college: body.college || null,
-      campus_status: body.campus_status === true,
-      driver_license: body.driver_license || null,
-      plate_number: body.plate_number.trim(),
-      make: body.make || null,
-      color: body.color || null,
-      created_at: new Date()
-    };
-
     const { data, error } = await supabase
       .from('users')
-      .insert([newUser])
+      .insert([{
+        name: body.name,
+        staff_student_id: body.staff_student_id,
+        role: body.role,
+        phone: body.phone,
+        address: body.address,
+        college: body.college,
+        campus_status: body.campus_status,
+        driver_license: body.driver_license,
+        plate_number: body.plate_number,
+        make: body.make,
+        color: body.color,
+        created_at: new Date()
+      }])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
 
-    return Response.json(data);
+    return res.status(200).json(data);
 
   } catch (err) {
-    return Response.json(
-      { error: err.message },
-      { status: 500 }
-    );
+    return res.status(500).json({ error: err.message });
   }
 }
