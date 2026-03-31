@@ -1,42 +1,26 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from '@supabase/supabase-js';
 
-// ==========================
-// INIT SUPABASE (SECURE)
-// ==========================
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-// ==========================
-// HANDLER
-// ==========================
-export default async function handler(req, res) {
-  // ✅ ONLY ALLOW POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export async function POST(request) {
   try {
-    const body = req.body;
+    const body = await request.json();
 
-    // ==========================
-    // 🔐 VALIDATION (IMPROVED)
-    // ==========================
     if (
       !body.name ||
       !body.staff_student_id ||
       !body.role ||
       !body.plate_number
     ) {
-      return res.status(400).json({
-        error: 'Missing required fields'
-      });
+      return Response.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
-    // ==========================
-    // 🧼 CLEAN DATA (PREVENT BAD INPUT)
-    // ==========================
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_KEY
+    );
+
     const newUser = {
       name: body.name.trim(),
       staff_student_id: body.staff_student_id.trim(),
@@ -52,9 +36,6 @@ export default async function handler(req, res) {
       created_at: new Date()
     };
 
-    // ==========================
-    // 🚀 INSERT INTO DB
-    // ==========================
     const { data, error } = await supabase
       .from('users')
       .insert([newUser])
@@ -62,16 +43,12 @@ export default async function handler(req, res) {
 
     if (error) throw error;
 
-    // ==========================
-    // ✅ RESPONSE
-    // ==========================
-    return res.status(200).json(data);
+    return Response.json(data);
 
   } catch (err) {
-    console.error('REGISTER ERROR:', err);
-
-    return res.status(500).json({
-      error: 'Server error'
-    });
+    return Response.json(
+      { error: err.message },
+      { status: 500 }
+    );
   }
 }
