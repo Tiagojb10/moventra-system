@@ -37,7 +37,6 @@
       <span>Register Vehicle</span>
     </a>
 
-    <!-- ACTIVE -->
     <a href="qr.html"
        class="flex items-center gap-3 p-3 rounded-lg bg-red-500/20 text-red-400 font-medium">
       <i data-lucide="qr-code"></i>
@@ -56,12 +55,15 @@
   </h2>
 
   <input id="searchId" type="text" placeholder="Enter Staff / Student ID"
-    class="w-full rounded-lg p-2 mb-3">
+    class="w-full rounded-lg p-2 mb-2">
 
   <button onclick="searchUser()"
-    class="w-full bg-red-600 text-white py-2 rounded-lg mb-4 hover:bg-red-700 transition">
+    class="w-full bg-red-600 text-white py-2 rounded-lg mb-3 hover:bg-red-700 transition">
     Search
   </button>
+
+  <!-- ✅ FEEDBACK -->
+  <div id="feedback"></div>
 
   <!-- RESULT -->
   <div id="resultBox" class="hidden mt-6">
@@ -81,6 +83,12 @@
         <canvas id="resultQR" class="p-2 rounded-lg shadow-inner"></canvas>
       </div>
 
+      <!-- ✅ DOWNLOAD BUTTON -->
+      <button id="downloadQR"
+        class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition mt-3 hidden">
+        Download QR Code
+      </button>
+
       <p class="text-xs opacity-50">
         Show this QR at the entrance
       </p>
@@ -91,10 +99,8 @@
 
 </div>
 
-<!-- ✅ FIX: USE EXTERNAL JS ONLY (no duplicate logic) -->
 <script type="module" src="qr.js"></script>
 
-<!-- ICONS -->
 <script>
   lucide.createIcons();
 </script>
