@@ -27,7 +27,7 @@ overlay?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🔥 FEEDBACK (MATCHES app.js)
+// FEEDBACK (MATCHES app.js)
 // ==========================
 function showFeedback(message, type = 'error') {
   if (!feedbackDiv) return;
@@ -45,10 +45,15 @@ function showFeedback(message, type = 'error') {
 }
 
 // ==========================
-// 🔍 SEARCH USER
+// SEARCH USER
 // ==========================
 async function searchUser() {
   const id = searchInput.value.trim();
+
+  // Clear previous state
+  feedbackDiv.textContent = '';
+  resultBox.classList.add('hidden');
+  downloadBtn.classList.add('hidden');
 
   if (!id) {
     return showFeedback("Please enter an ID");
@@ -81,10 +86,11 @@ async function searchUser() {
     // SHOW DOWNLOAD BUTTON
     downloadBtn.classList.remove('hidden');
 
+    // DOWNLOAD LOGIC
     downloadBtn.onclick = () => {
       const link = document.createElement('a');
       link.download = `QR_${data.data.id}.png`;
-      link.href = resultQR.toDataURL();
+      link.href = resultQR.toDataURL('image/png');
       link.click();
     };
 
