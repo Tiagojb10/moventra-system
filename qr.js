@@ -10,9 +10,8 @@ const resultBox = document.getElementById('resultBox');
 const resultName = document.getElementById('resultName');
 const resultPlate = document.getElementById('resultPlate');
 const resultQR = document.getElementById('resultQR');
-
-// 🔥 NEW: download button (we will create it dynamically)
-let downloadBtn;
+const downloadBtn = document.getElementById('downloadQR');
+const feedbackDiv = document.getElementById('feedback');
 
 // ==========================
 // MENU
@@ -28,14 +27,25 @@ overlay?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🔥 FEEDBACK SYSTEM (same style as app.js)
+// 🔥 FEEDBACK (MATCHES app.js)
 // ==========================
-function showFeedback(message) {
-  alert(message); // simple for now (can upgrade to UI later)
+function showFeedback(message, type = 'error') {
+  if (!feedbackDiv) return;
+
+  feedbackDiv.textContent = message;
+  feedbackDiv.className =
+    type === 'success'
+      ? 'bg-green-200 text-green-800 p-2 rounded-lg mb-2 text-sm'
+      : 'bg-red-200 text-red-800 p-2 rounded-lg mb-2 text-sm';
+
+  setTimeout(() => {
+    feedbackDiv.textContent = '';
+    feedbackDiv.className = '';
+  }, 4000);
 }
 
 // ==========================
-// 🔍 SEARCH USER (IMPROVED)
+// 🔍 SEARCH USER
 // ==========================
 async function searchUser() {
   const id = searchInput.value.trim();
@@ -52,17 +62,13 @@ async function searchUser() {
       return showFeedback(data.error || "Search failed");
     }
 
-    // ==========================
     // SHOW RESULT
-    // ==========================
     resultBox.classList.remove('hidden');
 
     resultName.textContent = data.data.name;
     resultPlate.textContent = "Plate: " + data.data.plate_number;
 
-    // ==========================
     // GENERATE QR
-    // ==========================
     await QRCode.toCanvas(
       resultQR,
       JSON.stringify({
@@ -72,16 +78,8 @@ async function searchUser() {
       { width: 180 }
     );
 
-    // ==========================
-    // 🔥 ADD DOWNLOAD BUTTON
-    // ==========================
-    if (!downloadBtn) {
-      downloadBtn = document.createElement('button');
-      downloadBtn.textContent = "Download QR";
-      downloadBtn.className = "mt-3 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition w-full";
-
-      resultBox.appendChild(downloadBtn);
-    }
+    // SHOW DOWNLOAD BUTTON
+    downloadBtn.classList.remove('hidden');
 
     downloadBtn.onclick = () => {
       const link = document.createElement('a');
@@ -89,6 +87,9 @@ async function searchUser() {
       link.href = resultQR.toDataURL();
       link.click();
     };
+
+    // SUCCESS MESSAGE
+    showFeedback("QR code generated successfully", "success");
 
   } catch (err) {
     console.error(err);
