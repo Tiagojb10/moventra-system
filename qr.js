@@ -13,6 +13,11 @@ const resultQR = document.getElementById('resultQR');
 const downloadBtn = document.getElementById('downloadQR');
 const feedbackDiv = document.getElementById('feedback');
 
+// 🔥 NEW BUTTON ELEMENTS
+const searchBtn = document.getElementById('searchBtn');
+const btnText = document.getElementById('btnText');
+const btnLoader = document.getElementById('btnLoader');
+
 // ==========================
 // MENU
 // ==========================
@@ -27,7 +32,7 @@ overlay?.addEventListener('click', () => {
 });
 
 // ==========================
-// FEEDBACK (MATCHES app.js)
+// FEEDBACK
 // ==========================
 function showFeedback(message, type = 'error') {
   if (!feedbackDiv) return;
@@ -45,14 +50,36 @@ function showFeedback(message, type = 'error') {
 }
 
 // ==========================
+// 🔥 IMPROVED LOADING STATE
+// ==========================
+function setLoading(isLoading) {
+  if (!searchBtn) return;
+
+  if (isLoading) {
+    searchBtn.disabled = true;
+    searchBtn.classList.add("opacity-70");
+
+    btnText?.classList.add("hidden");
+    btnLoader?.classList.remove("hidden");
+  } else {
+    searchBtn.disabled = false;
+    searchBtn.classList.remove("opacity-70");
+
+    btnText?.classList.remove("hidden");
+    btnLoader?.classList.add("hidden");
+  }
+}
+
+// ==========================
 // SEARCH USER
 // ==========================
 async function searchUser() {
   const id = searchInput.value.trim();
 
-  // Clear previous state
+  // reset UI
   feedbackDiv.textContent = '';
   resultBox.classList.add('hidden');
+  resultBox.classList.remove('fade-in'); // 🔥 reset animation
   downloadBtn.classList.add('hidden');
 
   if (!id) {
@@ -60,33 +87,41 @@ async function searchUser() {
   }
 
   try {
+    setLoading(true);
+
     const res = await fetch(`/api/search?id=${id}`);
     const data = await res.json();
 
     if (!res.ok) {
+      setLoading(false);
       return showFeedback(data.error || "Search failed");
     }
-
-    // SHOW RESULT
-    resultBox.classList.remove('hidden');
 
     resultName.textContent = data.data.name;
     resultPlate.textContent = "Plate: " + data.data.plate_number;
 
-    // GENERATE QR
+    const size = window.innerWidth < 500 ? 140 : 180;
+
     await QRCode.toCanvas(
       resultQR,
       JSON.stringify({
         type: 'moventra_user',
         id: data.data.id
       }),
-      { width: 180 }
+      { width: size }
     );
 
-    // SHOW DOWNLOAD BUTTON
+    // 🔥 FORCE RE-ANIMATION (important upgrade)
+    resultBox.classList.remove('hidden');
+
+    // small delay to allow DOM repaint
+    setTimeout(() => {
+      resultBox.classList.add('fade-in');
+    }, 10);
+
+    // show download
     downloadBtn.classList.remove('hidden');
 
-    // DOWNLOAD LOGIC
     downloadBtn.onclick = () => {
       const link = document.createElement('a');
       link.download = `QR_${data.data.id}.png`;
@@ -94,12 +129,14 @@ async function searchUser() {
       link.click();
     };
 
-    // SUCCESS MESSAGE
-    showFeedback("QR code generated successfully", "success");
+    showFeedback("QR generated successfully", "success");
 
   } catch (err) {
     console.error(err);
     showFeedback("Server error. Please try again.");
+  } finally {
+    // 🔥 ALWAYS stop loading (cleaner)
+    setLoading(false);
   }
 }
 
