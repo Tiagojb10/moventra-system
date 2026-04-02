@@ -114,11 +114,21 @@
       </div>
 
       <!-- COLLEGE -->
-      <div class="relative">
-        <i class="fas fa-school absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="college" type="text" placeholder="College / Faculty"
-          class="w-full rounded-lg p-3 pl-10 text-base">
-      </div>
+     <!-- COLLEGE -->
+<div class="dropdown" id="collegeDropdown">
+  <div class="dropdown-selected">
+    <span>Select College</span>
+    <i class="arrow"></i>
+  </div>
+
+  <div class="dropdown-options">
+    <div data-value="CEAS">CEAS</div>
+    <div data-value="CHANS">CHANS</div>
+    <div data-value="CBMS">CBMS</div>
+  </div>
+</div>
+
+<input type="hidden" id="college">
 
       <!-- CAMPUS -->
       <div class="dropdown" id="campusDropdown">
@@ -141,7 +151,7 @@
       </div>
 
       <button type="button" id="nextStage" class="w-full py-3 text-base rounded-lg">
-        Continue to Vehicle
+        Continue
       </button>
     </div>
 
