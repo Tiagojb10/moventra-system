@@ -75,14 +75,14 @@
       <!-- NAME -->
       <div class="relative">
         <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="name" type="text" placeholder="Full Name"
+        <input id="name" name="name" type="text" placeholder="Full Name" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
       <!-- ID -->
       <div class="relative">
         <i class="fas fa-id-card absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="staffId" type="text" placeholder="Staff / Student ID"
+        <input id="staffId" name="staffId" type="text" placeholder="Staff / Student ID" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
@@ -97,38 +97,36 @@
           <div data-value="staff">Staff</div>
         </div>
       </div>
-      <input type="hidden" id="role">
+      <input type="hidden" id="role" name="role">
 
       <!-- PHONE -->
       <div class="relative">
         <i class="fas fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="phone" type="tel" placeholder="Phone Number"
+        <input id="phone" name="phone" type="tel" placeholder="Phone Number" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
       <!-- ADDRESS -->
       <div class="relative">
         <i class="fas fa-home absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="address" type="text" placeholder="Home Address"
+        <input id="address" name="address" type="text" placeholder="Home Address"
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
       <!-- COLLEGE -->
-     <!-- COLLEGE -->
-<div class="dropdown" id="collegeDropdown">
-  <div class="dropdown-selected">
-    <span>Select College</span>
-    <i class="arrow"></i>
-  </div>
+      <div class="dropdown" id="collegeDropdown">
+        <div class="dropdown-selected">
+          <span>Select College</span>
+          <i class="arrow"></i>
+        </div>
 
-  <div class="dropdown-options">
-    <div data-value="CEAS">CEAS</div>
-    <div data-value="CHANS">CHANS</div>
-    <div data-value="CBMS">CBMS</div>
-  </div>
-</div>
-
-<input type="hidden" id="college">
+        <div class="dropdown-options">
+          <div data-value="CEAS">CEAS</div>
+          <div data-value="CHANS">CHANS</div>
+          <div data-value="CBMS">CBMS</div>
+        </div>
+      </div>
+      <input type="hidden" id="college" name="college">
 
       <!-- CAMPUS -->
       <div class="dropdown" id="campusDropdown">
@@ -141,12 +139,12 @@
           <div data-value="off">Off Campus</div>
         </div>
       </div>
-      <input type="hidden" id="campusStatus">
+      <input type="hidden" id="campusStatus" name="campusStatus">
 
       <!-- LICENSE -->
       <div class="relative">
         <i class="fas fa-id-badge absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="driverLicense" type="text" placeholder="Driver License Number"
+        <input id="driverLicense" name="driverLicense" type="text" placeholder="Driver License Number" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
@@ -164,19 +162,19 @@
 
       <div class="relative">
         <i class="fas fa-car absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="plateNumber" type="text" placeholder="Plate Number"
+        <input id="plateNumber" name="plateNumber" type="text" placeholder="Plate Number" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
       <div class="relative">
         <i class="fas fa-industry absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="make" type="text" placeholder="Make / Model"
+        <input id="make" name="make" type="text" placeholder="Make / Model" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
       <div class="relative">
         <i class="fas fa-palette absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input id="color" type="text" placeholder="Vehicle Color"
+        <input id="color" name="color" type="text" placeholder="Vehicle Color" required
           class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
