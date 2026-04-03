@@ -81,18 +81,99 @@ validateField('staffId','staffIdCheck');
 validateField('phone','phoneCheck');
 
 // ==========================
-// PHONE FORMAT
+// 🇿🇼 SMART ZIM FORMATTING
 // ==========================
+
+// 📱 PHONE (local + international)
 phone?.addEventListener('input', () => {
   let value = phone.value.replace(/\D/g, '');
 
-  if (value.length > 3 && value.length <= 6) {
-    value = value.slice(0,3) + ' ' + value.slice(3);
-  } else if (value.length > 6) {
-    value = value.slice(0,3) + ' ' + value.slice(3,6) + ' ' + value.slice(6,10);
+  // LOCAL: 0771234567 → 077 123 4567
+  if (value.startsWith('07')) {
+    value = value.slice(0, 10);
+
+    let formatted = value;
+
+    if (value.length > 3 && value.length <= 6) {
+      formatted = value.slice(0,3) + ' ' + value.slice(3);
+    } else if (value.length > 6) {
+      formatted =
+        value.slice(0,3) + ' ' +
+        value.slice(3,6) + ' ' +
+        value.slice(6,10);
+    }
+
+    phone.value = formatted;
+    return;
   }
 
-  phone.value = value;
+  // INTERNATIONAL: 263771234567 → +263 77 123 4567
+  if (value.startsWith('263')) {
+    value = value.slice(0, 12);
+
+    let formatted = '+263';
+
+    if (value.length > 3) formatted += ' ' + value.slice(3,5);
+    if (value.length > 5) formatted += ' ' + value.slice(5,8);
+    if (value.length > 8) formatted += ' ' + value.slice(8,12);
+
+    phone.value = formatted.trim();
+  }
+});
+
+// 🚗 PLATE NUMBER (ZIM STYLE)
+plateNumber?.addEventListener('input', () => {
+  let value = plateNumber.value.toUpperCase();
+  value = value.replace(/[^A-Z0-9]/g, '');
+
+  if (value.length <= 3) {
+    plateNumber.value = value;
+  } else if (value.length <= 7) {
+    plateNumber.value =
+      value.slice(0,3) + ' ' + value.slice(3);
+  } else {
+    plateNumber.value =
+      value.slice(0,2) + ' ' +
+      value.slice(2,5) + ' ' +
+      value.slice(5,7);
+  }
+});
+
+// 🪪 DRIVER LICENSE
+driverLicense?.addEventListener('input', () => {
+  let value = driverLicense.value.toUpperCase();
+  value = value.replace(/[^A-Z0-9]/g, '');
+  value = value.slice(0, 15);
+  driverLicense.value = value;
+});
+
+// ==========================
+// 🔥 REAL-TIME VALIDATION
+// ==========================
+function markValid(input, condition) {
+  if (!input) return;
+
+  if (condition) {
+    input.classList.add('valid');
+    input.classList.remove('invalid');
+  } else {
+    input.classList.remove('valid');
+    input.classList.add('invalid');
+  }
+}
+
+// phone (10 digits local OR 12 intl)
+phone?.addEventListener('input', () => {
+  const clean = phone.value.replace(/\D/g, '');
+  markValid(phone, clean.length === 10 || clean.length === 12);
+});
+
+plateNumber?.addEventListener('input', () => {
+  markValid(plateNumber, plateNumber.value.replace(/\s/g,'').length >= 5);
+});
+
+driverLicense?.addEventListener('input', () => {
+  markValid(driverLicense, driverLicense.value.length >= 6);
 });
 
 // ==========================
@@ -123,7 +204,7 @@ prevStageBtn?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🚀 SUBMIT (UPDATED ERROR HANDLING)
+// 🚀 SUBMIT
 // ==========================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -173,8 +254,6 @@ form?.addEventListener('submit', async (e) => {
   } catch (err) {
     console.error(err);
     loadingOverlay?.classList.add('hidden');
-
-    // ✅ SHOW REAL ERROR MESSAGE
     showFeedback(err.message, 'error');
   }
 });
