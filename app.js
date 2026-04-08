@@ -25,6 +25,7 @@ const address = document.getElementById('address');
 const college = document.getElementById('college');
 const campusStatus = document.getElementById('campusStatus');
 const driverLicense = document.getElementById('driverLicense');
+const password = document.getElementById('password'); // 🔐 FIX
 const plateNumber = document.getElementById('plateNumber');
 const make = document.getElementById('make');
 const color = document.getElementById('color');
@@ -118,7 +119,7 @@ phone?.addEventListener('input', () => {
 });
 
 // ==========================
-// 🚗 FIXED PLATE FORMAT (ABC-1234)
+// 🚗 PLATE FORMAT
 // ==========================
 plateNumber?.addEventListener('input', () => {
   let value = plateNumber.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -160,7 +161,6 @@ phone?.addEventListener('input', () => {
   markValid(phone, clean.length === 10 || clean.length === 12);
 });
 
-// ✅ FIXED PLATE VALIDATION
 plateNumber?.addEventListener('input', () => {
   const pattern = /^[A-Z]{3}-\d{4}$/;
   markValid(plateNumber, pattern.test(plateNumber.value));
@@ -174,7 +174,7 @@ driverLicense?.addEventListener('input', () => {
 // STAGE NAVIGATION
 // ==========================
 nextStageBtn?.addEventListener('click', () => {
-  const fields = [name, staffId, role, college, driverLicense, campusStatus];
+  const fields = [name, staffId, role, college, driverLicense, campusStatus, password];
   let valid = true;
 
   fields.forEach(el => {
@@ -198,10 +198,15 @@ prevStageBtn?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🚀 SUBMIT (WITH FIX)
+// 🚀 SUBMIT
 // ==========================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // 🔐 PASSWORD CHECK
+  if (!password.value || password.value.length !== 8) {
+    return showFeedback('Password must be exactly 8 characters', 'error');
+  }
 
   const fields = [name, staffId, role, college, driverLicense, campusStatus, plateNumber, make, color];
   let valid = true;
@@ -213,7 +218,6 @@ form?.addEventListener('submit', async (e) => {
     }
   });
 
-  // ✅ STRICT PLATE CHECK
   const platePattern = /^[A-Z]{3}-\d{4}$/;
   if (!platePattern.test(plateNumber.value)) {
     return showFeedback('Plate must be in format ABC-1234', 'error');
@@ -238,7 +242,8 @@ form?.addEventListener('submit', async (e) => {
         driver_license: driverLicense.value,
         plate_number: plateNumber.value,
         make: make.value,
-        color: color.value
+        color: color.value,
+        password: password.value // 🔐 FIX
       })
     });
 
@@ -256,12 +261,6 @@ form?.addEventListener('submit', async (e) => {
     loadingOverlay?.classList.add('hidden');
     showFeedback(err.message, 'error');
   }
-
-   // 🔐 PASSWORD LENGTH CHECK
-   if (password.value.length !== 8) {
-    return showFeedback('Password must be exactly 8 characters', 'error');
-}
-
 });
 
 // ==========================
