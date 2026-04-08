@@ -55,7 +55,7 @@ export default async function handler(req, res) {
         make: body.make || null,
         color: body.color || null,
 
-        password_field: body.password.trim(),
+        password_field: body.password.trim().slice(0,8),
 
         created_at: new Date()
       }])
