@@ -4,15 +4,27 @@ import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
   try {
-    if (req.method !== 'GET') {
-      return res.status(405).json({ error: 'Only GET requests are allowed' });
+    // ✅ ONLY POST ALLOWED NOW
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Only POST requests are allowed' });
     }
 
-    const { id } = req.query;
+    if (password.length !== 8) {
+  return res.status(400).json({
+    error: 'Invalid password format'
+  });
+  }
 
-    if (!id || !id.trim()) {
+    const body = typeof req.body === "string"
+      ? JSON.parse(req.body)
+      : req.body;
+
+    const { id, password } = body;
+
+    // ✅ VALIDATION
+    if (!id || !id.trim() || !password) {
       return res.status(400).json({
-        error: 'Please enter a valid ID'
+        error: 'ID and password are required'
       });
     }
 
@@ -21,10 +33,12 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_KEY
     );
 
+    // 🔐 MATCH ID + PASSWORD
     const { data, error } = await supabase
       .from('users')
       .select('id, name, plate_number')
       .eq('staff_student_id', id.trim())
+      .eq('password_field', password)
       .limit(1);
 
     if (error) {
@@ -33,14 +47,16 @@ export default async function handler(req, res) {
       });
     }
 
+    // ❌ INVALID LOGIN
     if (!data || data.length === 0) {
-      return res.status(404).json({
-        error: 'No user found with this ID'
+      return res.status(401).json({
+        error: 'Invalid ID or password'
       });
     }
 
+    // ✅ SUCCESS
     return res.status(200).json({
-      message: 'User found',
+      message: 'User authenticated',
       data: data[0]
     });
 
