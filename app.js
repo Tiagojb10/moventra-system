@@ -81,14 +81,11 @@ validateField('staffId','staffIdCheck');
 validateField('phone','phoneCheck');
 
 // ==========================
-// 🇿🇼 SMART ZIM FORMATTING
+// 🇿🇼 PHONE FORMAT
 // ==========================
-
-// 📱 PHONE (local + international)
 phone?.addEventListener('input', () => {
   let value = phone.value.replace(/\D/g, '');
 
-  // LOCAL: 0771234567 → 077 123 4567
   if (value.startsWith('07')) {
     value = value.slice(0, 10);
 
@@ -107,7 +104,6 @@ phone?.addEventListener('input', () => {
     return;
   }
 
-  // INTERNATIONAL: 263771234567 → +263 77 123 4567
   if (value.startsWith('263')) {
     value = value.slice(0, 12);
 
@@ -121,25 +117,22 @@ phone?.addEventListener('input', () => {
   }
 });
 
-// 🚗 PLATE NUMBER (ZIM STYLE)
+// ==========================
+// 🚗 FIXED PLATE FORMAT (ABC-1234)
+// ==========================
 plateNumber?.addEventListener('input', () => {
-  let value = plateNumber.value.toUpperCase();
-  value = value.replace(/[^A-Z0-9]/g, '');
+  let value = plateNumber.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-  if (value.length <= 3) {
-    plateNumber.value = value;
-  } else if (value.length <= 7) {
-    plateNumber.value =
-      value.slice(0,3) + ' ' + value.slice(3);
-  } else {
-    plateNumber.value =
-      value.slice(0,2) + ' ' +
-      value.slice(2,5) + ' ' +
-      value.slice(5,7);
+  if (value.length > 3) {
+    value = value.slice(0, 3) + '-' + value.slice(3, 7);
   }
+
+  plateNumber.value = value;
 });
 
+// ==========================
 // 🪪 DRIVER LICENSE
+// ==========================
 driverLicense?.addEventListener('input', () => {
   let value = driverLicense.value.toUpperCase();
   value = value.replace(/[^A-Z0-9]/g, '');
@@ -162,14 +155,15 @@ function markValid(input, condition) {
   }
 }
 
-// phone (10 digits local OR 12 intl)
 phone?.addEventListener('input', () => {
   const clean = phone.value.replace(/\D/g, '');
   markValid(phone, clean.length === 10 || clean.length === 12);
 });
 
+// ✅ FIXED PLATE VALIDATION
 plateNumber?.addEventListener('input', () => {
-  markValid(plateNumber, plateNumber.value.replace(/\s/g,'').length >= 5);
+  const pattern = /^[A-Z]{3}-\d{4}$/;
+  markValid(plateNumber, pattern.test(plateNumber.value));
 });
 
 driverLicense?.addEventListener('input', () => {
@@ -204,7 +198,7 @@ prevStageBtn?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🚀 SUBMIT
+// 🚀 SUBMIT (WITH FIX)
 // ==========================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -218,6 +212,12 @@ form?.addEventListener('submit', async (e) => {
       valid = false;
     }
   });
+
+  // ✅ STRICT PLATE CHECK
+  const platePattern = /^[A-Z]{3}-\d{4}$/;
+  if (!platePattern.test(plateNumber.value)) {
+    return showFeedback('Plate must be in format ABC-1234', 'error');
+  }
 
   if (!valid) return showFeedback('Complete all fields!', 'error');
 
@@ -256,6 +256,12 @@ form?.addEventListener('submit', async (e) => {
     loadingOverlay?.classList.add('hidden');
     showFeedback(err.message, 'error');
   }
+
+   // 🔐 PASSWORD LENGTH CHECK
+   if (password.value.length !== 8) {
+    return showFeedback('Password must be exactly 8 characters', 'error');
+}
+
 });
 
 // ==========================
