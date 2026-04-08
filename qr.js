@@ -6,6 +6,8 @@ const sideMenu = document.getElementById('sideMenu');
 const overlay = document.getElementById('overlay');
 
 const searchInput = document.getElementById('searchId');
+const passwordInput = document.getElementById('userPassword'); // 🔐 NEW
+
 const resultBox = document.getElementById('resultBox');
 const resultName = document.getElementById('resultName');
 const resultPlate = document.getElementById('resultPlate');
@@ -50,7 +52,7 @@ function showFeedback(message, type = 'error') {
 }
 
 // ==========================
-// 🔥 IMPROVED LOADING STATE
+// LOADING STATE
 // ==========================
 function setLoading(isLoading) {
   if (!searchBtn) return;
@@ -71,32 +73,50 @@ function setLoading(isLoading) {
 }
 
 // ==========================
-// SEARCH USER
+// 🔐 SEARCH USER (SECURED)
 // ==========================
 async function searchUser() {
   const id = searchInput.value.trim();
+  const password = passwordInput.value.trim();
 
   // reset UI
   feedbackDiv.textContent = '';
   resultBox.classList.add('hidden');
-  resultBox.classList.remove('fade-in'); // 🔥 reset animation
+  resultBox.classList.remove('fade-in');
   downloadBtn.classList.add('hidden');
 
+  // ✅ VALIDATION
   if (!id) {
     return showFeedback("Please enter an ID");
+  }
+
+  if (!password) {
+    return showFeedback("Please enter password");
   }
 
   try {
     setLoading(true);
 
-    const res = await fetch(`/api/search?id=${id}`);
+    // ✅ NEW SECURE REQUEST
+    const res = await fetch(`/api/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: id,
+        password: password
+      })
+    });
+
     const data = await res.json();
 
     if (!res.ok) {
       setLoading(false);
-      return showFeedback(data.error || "Search failed");
+      return showFeedback(data.error || "Authentication failed");
     }
 
+    // ✅ SHOW DATA
     resultName.textContent = data.data.name;
     resultPlate.textContent = "Plate: " + data.data.plate_number;
 
@@ -111,15 +131,12 @@ async function searchUser() {
       { width: size }
     );
 
-    // 🔥 FORCE RE-ANIMATION (important upgrade)
     resultBox.classList.remove('hidden');
 
-    // small delay to allow DOM repaint
     setTimeout(() => {
       resultBox.classList.add('fade-in');
     }, 10);
 
-    // show download
     downloadBtn.classList.remove('hidden');
 
     downloadBtn.onclick = () => {
@@ -135,7 +152,6 @@ async function searchUser() {
     console.error(err);
     showFeedback("Server error. Please try again.");
   } finally {
-    // 🔥 ALWAYS stop loading (cleaner)
     setLoading(false);
   }
 }
@@ -146,6 +162,10 @@ async function searchUser() {
 window.searchUser = searchUser;
 
 searchInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') searchUser();
+});
+
+passwordInput?.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') searchUser();
 });
 
