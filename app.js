@@ -278,6 +278,18 @@ form?.addEventListener('submit', async (e) => {
       );
     }
 
+    // ✅ ENABLE DOWNLOAD BUTTON
+if (downloadQRBtn && successQR) {
+  downloadQRBtn.onclick = () => {
+    const link = document.createElement('a');
+
+    link.download = `QR_${user.id}.png`;
+    link.href = successQR.toDataURL('image/png');
+
+    link.click();
+  };
+}
+
   } catch (err) {
     console.error(err);
     loadingOverlay?.classList.add('hidden');
