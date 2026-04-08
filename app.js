@@ -13,6 +13,11 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const successScreen = document.getElementById('successScreen');
 const closeSuccess = document.getElementById('closeSuccess');
 
+// 🆕 QR SUCCESS ELEMENTS
+const successName = document.getElementById('successName');
+const successPlate = document.getElementById('successPlate');
+const successQR = document.getElementById('successQR');
+
 const menuBtn = document.getElementById('menuBtn');
 const sideMenu = document.getElementById('sideMenu');
 const overlay = document.getElementById('overlay');
@@ -25,7 +30,7 @@ const address = document.getElementById('address');
 const college = document.getElementById('college');
 const campusStatus = document.getElementById('campusStatus');
 const driverLicense = document.getElementById('driverLicense');
-const password = document.getElementById('password'); // 🔐 FIX
+const password = document.getElementById('password');
 const plateNumber = document.getElementById('plateNumber');
 const make = document.getElementById('make');
 const color = document.getElementById('color');
@@ -198,12 +203,11 @@ prevStageBtn?.addEventListener('click', () => {
 });
 
 // ==========================
-// 🚀 SUBMIT
+// 🚀 SUBMIT (UPDATED WITH QR)
 // ==========================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // 🔐 PASSWORD CHECK
   if (!password.value || password.value.length !== 8) {
     return showFeedback('Password must be exactly 8 characters', 'error');
   }
@@ -243,7 +247,7 @@ form?.addEventListener('submit', async (e) => {
         plate_number: plateNumber.value,
         make: make.value,
         color: color.value,
-        password: password.value // 🔐 FIX
+        password: password.value
       })
     });
 
@@ -253,8 +257,26 @@ form?.addEventListener('submit', async (e) => {
       throw new Error(data.error || "Something went wrong");
     }
 
+    const user = data.data[0];
+
     loadingOverlay?.classList.add('hidden');
     successScreen?.classList.remove('hidden');
+
+    // ✅ SET USER INFO
+    if (successName) successName.textContent = user.name;
+    if (successPlate) successPlate.textContent = "Plate: " + user.plate_number;
+
+    // ✅ GENERATE QR
+    if (window.QRCode && successQR) {
+      await QRCode.toCanvas(
+        successQR,
+        JSON.stringify({
+          type: 'moventra_user',
+          id: user.id
+        }),
+        { width: 180 }
+      );
+    }
 
   } catch (err) {
     console.error(err);
