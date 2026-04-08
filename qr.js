@@ -6,7 +6,7 @@ const sideMenu = document.getElementById('sideMenu');
 const overlay = document.getElementById('overlay');
 
 const searchInput = document.getElementById('searchId');
-const passwordInput = document.getElementById('userPassword'); // 🔐 NEW
+const passwordInput = document.getElementById('userPassword');
 
 const resultBox = document.getElementById('resultBox');
 const resultName = document.getElementById('resultName');
@@ -94,10 +94,14 @@ async function searchUser() {
     return showFeedback("Please enter password");
   }
 
+  // 🔐 PASSWORD LENGTH CHECK (NEW FIX)
+  if (password.length !== 8) {
+    return showFeedback("Password must be exactly 8 characters");
+  }
+
   try {
     setLoading(true);
 
-    // ✅ NEW SECURE REQUEST
     const res = await fetch(`/api/search`, {
       method: "POST",
       headers: {
@@ -116,7 +120,6 @@ async function searchUser() {
       return showFeedback(data.error || "Authentication failed");
     }
 
-    // ✅ SHOW DATA
     resultName.textContent = data.data.name;
     resultPlate.textContent = "Plate: " + data.data.plate_number;
 
