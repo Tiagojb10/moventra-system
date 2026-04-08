@@ -9,17 +9,19 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Only POST requests are allowed' });
     }
 
-    if (password.length !== 8) {
-  return res.status(400).json({
-    error: 'Invalid password format'
-  });
-  }
-
+    // ✅ FIX: define body FIRST
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
       : req.body;
 
     const { id, password } = body;
+
+    // 🔐 PASSWORD LENGTH CHECK (moved here)
+    if (password.length !== 8) {
+      return res.status(400).json({
+        error: 'Invalid password format'
+      });
+    }
 
     // ✅ VALIDATION
     if (!id || !id.trim() || !password) {
