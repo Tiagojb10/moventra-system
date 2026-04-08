@@ -8,18 +8,26 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Only POST requests are allowed' });
     }
 
+    if (body.password.length !== 8) {
+  return res.status(400).json({
+    error: 'Password must be exactly 8 characters'
+    });
+     }
+
     const body = typeof req.body === "string"
       ? JSON.parse(req.body)
       : req.body;
 
+    // ✅ VALIDATION (UPDATED)
     if (
       !body.name ||
       !body.staff_student_id ||
       !body.role ||
-      !body.plate_number
+      !body.plate_number ||
+      !body.password
     ) {
       return res.status(400).json({
-        error: 'Please fill in all required fields'
+        error: 'Please fill in all required fields including password'
       });
     }
 
@@ -34,14 +42,20 @@ export default async function handler(req, res) {
         name: body.name.trim(),
         staff_student_id: body.staff_student_id.trim(),
         role: body.role,
+
         phone: body.phone || null,
         address: body.address || null,
         college: body.college || null,
         campus_status: body.campus_status === true,
         driver_license: body.driver_license || null,
+
         plate_number: body.plate_number.trim(),
         make: body.make || null,
         color: body.color || null,
+
+        // 🔐 NEW PASSWORD FIELD
+        password_field: body.password.trim(),
+
         created_at: new Date()
       }])
       .select();
