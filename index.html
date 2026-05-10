@@ -50,6 +50,12 @@
 <!-- MAIN CARD -->
 <div class="card p-4 sm:p-7 max-w-xl w-full mx-auto mt-10">
 
+  <!-- ✅ LOGO AREA -->
+  <div class="au-logo-area">
+    <img src="au.jpg" alt="Africa University" class="au-logo-img"
+      onerror="this.style.display='none'">
+  </div>
+
   <div class="text-center mb-6">
     <h1 class="text-xl sm:text-2xl font-bold">Moventra System</h1>
     <p class="text-sm opacity-70">Vehicle Registration Portal</p>
@@ -144,8 +150,8 @@
         <input id="driverLicense" name="driverLicense" type="text" placeholder="Driver License Number" required class="w-full rounded-lg p-3 pl-10 text-base">
       </div>
 
-      <button type="button" id="nextStage" class="w-full py-3 text-base rounded-lg">
-        Continue
+      <button type="button" id="nextStage" class="btn-primary w-full py-3 text-base rounded-lg">
+        Continue <i class="fas fa-arrow-right ml-2"></i>
       </button>
     </div>
 
@@ -168,8 +174,12 @@
       </div>
 
       <div class="flex gap-3">
-        <button type="button" id="prevStage" class="w-1/3 py-3 rounded-lg bg-gray-200 text-gray-800">Back</button>
-        <button type="submit" class="w-2/3 py-3 rounded-lg">Complete Registration</button>
+        <button type="button" id="prevStage" class="btn-secondary w-1/3 py-3 rounded-lg">
+          <i class="fas fa-arrow-left mr-2"></i> Back
+        </button>
+        <button type="submit" class="btn-primary w-2/3 py-3 rounded-lg">
+          <i class="fas fa-check mr-2"></i> Complete Registration
+        </button>
       </div>
     </div>
 
@@ -177,8 +187,19 @@
 
 </div>
 
+<!-- ✅ FOOTER -->
+<footer class="site-footer">
+  <p class="footer-copy">
+    &copy; <span id="footerYear"></span> Africa University. All Rights Reserved
+  </p>
+  <p class="footer-sub">Secure Vehicle Registration System</p>
+</footer>
+
 <script type="module" src="app.js"></script>
-<script>lucide.createIcons();</script>
+<script>
+  lucide.createIcons();
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+</script>
 
 <!-- LOADING -->
 <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-[2000]">
@@ -199,14 +220,13 @@
   <canvas id="successQR"></canvas>
 </div>
 
-<!-- ✅ DOWNLOAD BUTTON -->
 <button id="downloadQRBtn"
-  class="w-full py-3 rounded-lg flex items-center justify-center gap-2 mb-2">
+  class="btn-primary w-full py-3 rounded-lg flex items-center justify-center gap-2 mb-2">
   <i class="fas fa-download"></i>
   Download QR Code
 </button>
 
-    <button id="closeSuccess" class="w-full py-3 rounded-lg">Continue</button>
+    <button id="closeSuccess" class="btn-secondary w-full py-3 rounded-lg">Continue</button>
 
   </div>
 </div>
