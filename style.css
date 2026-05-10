@@ -25,6 +25,28 @@ body {
 }
 
 /* ========================= */
+/* ✅ LOGO AREA */
+/* ========================= */
+.au-logo-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f3f4f6;
+  min-height: 80px;
+}
+
+.au-logo-img {
+  width: auto;
+  height: auto;
+  max-height: 110px;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ========================= */
 /* INNER CARD */
 /* ========================= */
 .glass-inner {
@@ -57,7 +79,7 @@ input:focus, select:focus {
 }
 
 /* ========================= */
-/* BUTTON */
+/* BUTTON — base */
 /* ========================= */
 button {
   background: #ff1a1a;
@@ -75,6 +97,74 @@ button:hover {
 
 button:active {
   transform: scale(0.97);
+}
+
+/* ========================= */
+/* ✅ BUTTON AFFORDANCE CLASSES */
+/* ========================= */
+
+/* Primary — red, elevated, clear call-to-action */
+.btn-primary {
+  background: #ff1a1a;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  border-radius: 12px;
+  border: none;
+  box-shadow:
+    0 4px 14px rgba(255, 26, 26, 0.45),
+    0 1px 3px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: #e00;
+  box-shadow:
+    0 6px 20px rgba(255, 26, 26, 0.55),
+    0 2px 6px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255,26,26,0.3);
+}
+
+/* Secondary — light, outlined feel, clearly different from primary */
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  border: 1.5px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+  background: #d1d5db;
 }
 
 /* ========================= */
@@ -304,4 +394,36 @@ p {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ========================= */
+/* ✅ FOOTER */
+/* ========================= */
+.site-footer {
+  text-align: center;
+  padding: 28px 16px 20px;
+  margin-top: 16px;
+}
+
+.footer-logo {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 3px;
+}
+
+.footer-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
 }
