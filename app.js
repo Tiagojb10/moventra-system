@@ -88,7 +88,7 @@ validateField('staffId','staffIdCheck');
 validateField('phone','phoneCheck');
 
 // ==========================
-// 🇿🇼 PHONE FORMAT
+// 🇿🇼 PHONE FORMAT + VALIDATION
 // ==========================
 phone?.addEventListener('input', () => {
   let value = phone.value.replace(/\D/g, '');
@@ -108,10 +108,7 @@ phone?.addEventListener('input', () => {
     }
 
     phone.value = formatted;
-    return;
-  }
-
-  if (value.startsWith('263')) {
+  } else if (value.startsWith('263')) {
     value = value.slice(0, 12);
 
     let formatted = '+263';
@@ -122,6 +119,10 @@ phone?.addEventListener('input', () => {
 
     phone.value = formatted.trim();
   }
+
+  // ✅ VALIDATION (merged — no duplicate listener)
+  const clean = phone.value.replace(/\D/g, '');
+  markValid(phone, clean.length === 10 || clean.length === 12);
 });
 
 // ==========================
@@ -161,11 +162,6 @@ function markValid(input, condition) {
     input.classList.add('invalid');
   }
 }
-
-phone?.addEventListener('input', () => {
-  const clean = phone.value.replace(/\D/g, '');
-  markValid(phone, clean.length === 10 || clean.length === 12);
-});
 
 plateNumber?.addEventListener('input', () => {
   const pattern = /^[A-Z]{3}-\d{4}$/;
