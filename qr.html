@@ -72,7 +72,14 @@
     <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
     <input id="userPassword" type="password" placeholder="Enter Password"
-      class="w-full rounded-lg p-3 pl-10 text-base">
+      class="w-full rounded-lg p-3 pl-10 pr-10 text-base">
+
+    <button type="button" id="togglePassword"
+      onclick="togglePasswordVisibility()"
+      class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent shadow-none p-0 m-0"
+      style="background:none !important; box-shadow:none !important; width:auto;">
+      <i id="eyeIcon" class="fas fa-eye text-gray-400 hover:text-gray-600 transition"></i>
+    </button>
   </div>
 
   <!-- BUTTON WITH LOADER -->
@@ -135,6 +142,21 @@
 
 <script>
 lucide.createIcons();
+
+function togglePasswordVisibility() {
+  const input = document.getElementById('userPassword');
+  const icon = document.getElementById('eyeIcon');
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+}
 </script>
 
 </body>
