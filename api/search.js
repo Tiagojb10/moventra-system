@@ -3,11 +3,44 @@ export const runtime = 'nodejs';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
 
+// ==========================
+// 🔒 RATE LIMITER
+// Max 5 attempts per IP per 15 minutes
+// ==========================
+const attempts = new Map();
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const record = attempts.get(ip);
+
+  if (!record || now - record.windowStart > WINDOW_MS) {
+    attempts.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+
+  if (record.count >= MAX_ATTEMPTS) {
+    return true;
+  }
+
+  record.count++;
+  return false;
+}
+
 export default async function handler(req, res) {
   try {
     // ✅ ONLY POST ALLOWED NOW
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Only POST requests are allowed' });
+    }
+
+    // 🔒 RATE LIMIT CHECK
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+    if (isRateLimited(ip)) {
+      return res.status(429).json({
+        error: 'Too many attempts. Please wait 15 minutes and try again.'
+      });
     }
 
     // ✅ FIX: define body FIRST
