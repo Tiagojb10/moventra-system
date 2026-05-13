@@ -17,6 +17,7 @@ const closeSuccess = document.getElementById('closeSuccess');
 const successName = document.getElementById('successName');
 const successPlate = document.getElementById('successPlate');
 const successQR = document.getElementById('successQR');
+const downloadQRBtn = document.getElementById('downloadQRBtn');
 
 const menuBtn = document.getElementById('menuBtn');
 const sideMenu = document.getElementById('sideMenu');
