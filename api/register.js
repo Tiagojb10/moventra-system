@@ -1,6 +1,9 @@
 export const runtime = 'nodejs';
 
 import { createClient } from '@supabase/supabase-js';
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 export default async function handler(req, res) {
   try {
@@ -38,6 +41,9 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_KEY
     );
 
+    // 🔐 HASH PASSWORD before storing — never save plain text
+    const hashedPassword = await bcrypt.hash(body.password.trim(), SALT_ROUNDS);
+
     const { data, error } = await supabase
       .from('users')
       .insert([{
@@ -55,7 +61,7 @@ export default async function handler(req, res) {
         make: body.make || null,
         color: body.color || null,
 
-        password_field: body.password.trim().slice(0,8),
+        password_field: hashedPassword,
 
         created_at: new Date()
       }])
