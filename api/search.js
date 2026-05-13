@@ -1,6 +1,7 @@
 export const runtime = 'nodejs';
 
 import { createClient } from '@supabase/supabase-js';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req, res) {
   try {
@@ -35,12 +36,11 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_KEY
     );
 
-    // 🔐 MATCH ID + PASSWORD
+    // 🔐 Fetch user by ID only first, then compare password hash
     const { data, error } = await supabase
       .from('users')
-      .select('id, name, plate_number')
+      .select('id, name, plate_number, password_field')
       .eq('staff_student_id', id.trim())
-      .eq('password_field', password)
       .limit(1);
 
     if (error) {
@@ -49,17 +49,29 @@ export default async function handler(req, res) {
       });
     }
 
-    // ❌ INVALID LOGIN
+    // ❌ USER NOT FOUND
     if (!data || data.length === 0) {
       return res.status(401).json({
         error: 'Invalid ID or password'
       });
     }
 
+    // 🔐 COMPARE password against stored hash — never match plain text in DB
+    const passwordMatch = await bcrypt.compare(password, data[0].password_field);
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        error: 'Invalid ID or password'
+      });
+    }
+
+    // ✅ SUCCESS — strip password_field before sending response
+    const { password_field, ...safeUser } = data[0];
+
     // ✅ SUCCESS
     return res.status(200).json({
       message: 'User authenticated',
-      data: data[0]
+      data: safeUser
     });
 
   } catch (err) {
