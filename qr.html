@@ -7,47 +7,15 @@
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
 
-<!-- 🍔 BURGER -->
-<button id="menuBtn" class="fixed top-4 left-4 z-[1001] p-2 rounded-lg shadow-lg">
-  <i data-lucide="menu" class="text-white"></i>
-</button>
-
-<!-- 🌑 OVERLAY -->
-<div id="overlay" class="fixed inset-0 opacity-0 pointer-events-none transition duration-300 z-[999]"></div>
-
-<!-- 📂 SIDE MENU -->
-<div id="sideMenu" class="fixed top-0 left-0 h-full w-64 transform -translate-x-full transition duration-300 z-[1000] p-5">
-
-  <div class="flex items-center gap-2 mb-8">
-    <i data-lucide="car" class="text-red-500"></i>
-    <h2 class="text-xl font-bold text-white">Moventra</h2>
-  </div>
-
-  <nav class="space-y-2">
-    <a href="index.html"
-       class="flex items-center gap-3 rounded-lg hover:bg-white/10 transition">
-      <i data-lucide="user"></i>
-      <span>Register Vehicle</span>
-    </a>
-
-    <a href="qr.html"
-       class="flex items-center gap-3 rounded-lg bg-red-500/20 text-red-400 font-medium">
-      <i data-lucide="qr-code"></i>
-      <span>QR Code Check</span>
-    </a>
-  </nav>
-</div>
-
-<!-- MAIN -->
+<!-- MAIN CARD -->
 <div class="card p-4 sm:p-6 max-w-md w-full mx-auto">
 
   <!-- HEADER -->
@@ -56,7 +24,7 @@
       <i class="fas fa-qrcode text-red-500"></i>
       QR Code Lookup
     </h2>
-    <p class="text-sm opacity-60">Search and generate digital pass</p>
+    <p class="text-sm opacity-60">Search and generate vehicle QR pass</p>
   </div>
 
   <!-- INPUT -->
@@ -67,42 +35,26 @@
       class="w-full rounded-lg p-3 pl-10 text-base">
   </div>
 
-    <!-- 🔐 PASSWORD (NEW) -->
+  <!-- PASSWORD -->
   <div class="relative mb-3">
     <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
     <input id="userPassword" type="password" placeholder="Enter Password"
-      class="w-full rounded-lg p-3 pl-10 pr-10 text-base">
-
-    <button type="button" id="togglePassword"
-      onclick="togglePasswordVisibility()"
-      class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent shadow-none p-0 m-0"
-      style="background:none !important; box-shadow:none !important; width:auto;">
-      <i id="eyeIcon" class="fas fa-eye text-gray-400 hover:text-gray-600 transition"></i>
-    </button>
+      class="w-full rounded-lg p-3 pl-10 text-base">
   </div>
 
-  <!-- BUTTON WITH LOADER -->
+  <!-- SEARCH BUTTON -->
   <button id="searchBtn" onclick="searchUser()"
-    class="w-full py-3 text-base rounded-lg mb-3 flex items-center justify-center gap-2 relative overflow-hidden">
+    class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold flex justify-center items-center gap-2">
 
-    <!-- normal content -->
-    <span id="btnText" class="flex items-center gap-2">
-      <i class="fas fa-search"></i>
-      Search
-    </span>
-
-    <!-- loader -->
-    <span id="btnLoader" class="hidden absolute inset-0 flex items-center justify-center">
-      <span class="loader-small"></span>
-    </span>
-
+    <i class="fas fa-search"></i>
+    Search
   </button>
 
   <!-- FEEDBACK -->
-  <div id="feedback"></div>
+  <div id="feedback" class="text-center text-sm mt-3"></div>
 
-  <!-- RESULT -->
+  <!-- RESULT BOX -->
   <div id="resultBox" class="hidden mt-5">
 
     <div class="glass-inner p-5 text-center">
@@ -112,18 +64,28 @@
         Digital Parking Pass
       </h3>
 
-      <div class="mb-4">
-        <p id="resultName" class="font-semibold text-lg"></p>
-        <p id="resultPlate" class="text-sm"></p>
+      <p id="resultName" class="font-semibold text-lg"></p>
+
+      <p class="text-sm opacity-60 mb-3">
+        Select a vehicle to generate QR
+      </p>
+
+      <!-- VEHICLES -->
+      <div id="vehicleSection" class="hidden text-left mb-4">
+        <p class="text-sm font-semibold mb-2">Vehicles</p>
+        <div id="vehicleList" class="space-y-2"></div>
       </div>
 
+      <!-- QR -->
       <div class="flex justify-center mb-4">
         <canvas id="resultQR" class="p-2 rounded-lg"></canvas>
       </div>
 
+      <p id="resultPlate" class="text-sm font-semibold"></p>
+
       <!-- DOWNLOAD -->
       <button id="downloadQR"
-        class="w-full py-3 rounded-lg flex items-center justify-center gap-2 hidden">
+        class="w-full py-3 rounded-lg bg-black text-white mt-3 hidden">
         <i class="fas fa-download"></i>
         Download QR Code
       </button>
@@ -133,30 +95,93 @@
       </p>
 
     </div>
-
   </div>
-
 </div>
 
-<script type="module" src="qr.js"></script>
+<script type="module">
+let currentUser = null;
+let selectedVehicle = null;
 
-<script>
-lucide.createIcons();
+// SEARCH USER (tu liga isto ao teu backend depois)
+window.searchUser = async function () {
 
-function togglePasswordVisibility() {
-  const input = document.getElementById('userPassword');
-  const icon = document.getElementById('eyeIcon');
+  const id = document.getElementById("searchId").value;
 
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.classList.remove('fa-eye');
-    icon.classList.add('fa-eye-slash');
-  } else {
-    input.type = 'password';
-    icon.classList.remove('fa-eye-slash');
-    icon.classList.add('fa-eye');
-  }
+  // EXEMPLO MOCK (substitui pelo Supabase)
+  currentUser = {
+    id: "user-123",
+    name: "John Doe",
+    vehicles: [
+      { id: "v1", plate_number: "ABC-123", make: "Toyota", color: "Black" },
+      { id: "v2", plate_number: "XYZ-999", make: "BMW", color: "White" }
+    ]
+  };
+
+  document.getElementById("resultBox").classList.remove("hidden");
+  document.getElementById("resultName").innerText = currentUser.name;
+
+  renderVehicles(currentUser.vehicles);
+};
+
+// RENDER VEHICLES
+function renderVehicles(vehicles) {
+  const container = document.getElementById("vehicleList");
+  container.innerHTML = "";
+
+  document.getElementById("vehicleSection").classList.remove("hidden");
+
+  vehicles.forEach(v => {
+    const div = document.createElement("div");
+
+    div.className = `
+      p-3 rounded-lg border cursor-pointer
+      hover:bg-red-500/10 transition
+    `;
+
+    div.innerHTML = `
+      <div class="font-semibold">${v.plate_number}</div>
+      <div class="text-xs opacity-60">${v.make} ${v.color}</div>
+    `;
+
+    div.onclick = () => selectVehicle(v);
+
+    container.appendChild(div);
+  });
 }
+
+// SELECT VEHICLE
+function selectVehicle(vehicle) {
+  selectedVehicle = vehicle;
+
+  const payload = {
+    type: "moventra_vehicle",
+    user_id: currentUser.id,
+    vehicle_id: vehicle.id,
+    plate: vehicle.plate_number
+  };
+
+  QRCode.toCanvas(
+    document.getElementById("resultQR"),
+    JSON.stringify(payload),
+    { width: 200 }
+  );
+
+  document.getElementById("resultPlate").innerText =
+    vehicle.plate_number;
+
+  document.getElementById("downloadQR").classList.remove("hidden");
+}
+
+// DOWNLOAD QR
+document.getElementById("downloadQR").onclick = function () {
+  const canvas = document.getElementById("resultQR");
+  const link = document.createElement("a");
+
+  link.download = "moventra_qr.png";
+  link.href = canvas.toDataURL();
+  link.click();
+};
+
 </script>
 
 </body>
